@@ -1,0 +1,10 @@
+Django>=5.0,<5.2
+djangorestframework>=3.15.0
+django-cors-headers>=4.3.1
+channels[daphne]>=4.1.0
+channels-redis>=4.2.0
+psycopg2-binary>=2.9.9
+django-environ>=0.4.5
+google-genai>=0.1.1
+drf-spectacular>=0.27.1
+Pillow>=10.2.0
