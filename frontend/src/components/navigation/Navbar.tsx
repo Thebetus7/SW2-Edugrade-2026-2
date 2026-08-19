@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -11,16 +11,48 @@ import {
   BookOpen,
   KeyRound,
   FileCheck,
+  ChevronDown,
+  User as UserIcon,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleLogout = () => {
+    setDropdownOpen(false);
     logout();
     router.push('/login');
+  };
+
+  const toggleTheme = () => {
+    if (typeof window !== 'undefined') {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+  };
+
+  const showProfileAlert = () => {
+    setDropdownOpen(false);
+    if (user) {
+      alert(
+        `EduGrade AI - Detalle de Perfil:\n\n` +
+        `Nombre: ${user.full_name}\n` +
+        `Rol: ${user.badge_label || user.role}\n` +
+        `Email: ${user.email}\n` +
+        `Título: ${user.title || 'Usuario Registrado'}`
+      );
+    }
   };
 
   // Si estamos en la pantalla de login, no mostrar la barra de navegación completa
@@ -93,35 +125,77 @@ export function Navbar() {
       </nav>
 
       {/* User info & quick switch */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 relative">
         {isAuthenticated && user ? (
-          <div className="flex items-center space-x-3">
-            <div className="text-right hidden sm:block">
-              <div className="text-xs font-semibold text-white flex items-center justify-end space-x-1.5">
-                <span>{user.full_name}</span>
-                <span
-                  className={`text-[10px] font-medium uppercase px-1.5 py-0.5 rounded border ${
-                    role === 'ADMIN'
-                      ? 'bg-blue-950 text-blue-300 border-blue-800'
-                      : role === 'TEACHER'
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                      : 'bg-indigo-950 text-indigo-300 border-indigo-800'
-                  }`}
-                >
-                  {user.badge_label || role}
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400">{user.email}</p>
-            </div>
-
+          <div className="relative">
+            {/* User Dropdown Button */}
             <button
-              onClick={handleLogout}
-              title="Cerrar sesión"
-              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 transition"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center space-x-2.5 p-1.5 rounded-lg hover:bg-slate-800 border border-transparent hover:border-slate-700 transition text-left"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Salir</span>
+              <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-650 flex items-center justify-center text-blue-400 font-bold text-sm shrink-0">
+                {user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-xs font-semibold text-white flex items-center space-x-1.5">
+                  <span className="max-w-[120px] truncate">{user.full_name}</span>
+                  <span
+                    className={`text-[9px] font-bold uppercase px-1 py-0.2 rounded border ${
+                      role === 'ADMIN'
+                        ? 'bg-blue-950 text-blue-300 border-blue-800'
+                        : role === 'TEACHER'
+                        ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                        : 'bg-indigo-950 text-indigo-300 border-indigo-800'
+                    }`}
+                  >
+                    {user.badge_label || role}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-400 max-w-[150px] truncate">{user.email}</p>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
+
+            {/* Dropdown Menu */}
+            {dropdownOpen && (
+              <>
+                {/* Click outside overlay */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setDropdownOpen(false)}
+                />
+                
+                <div className="absolute right-0 mt-2 w-48 rounded-lg bg-slate-800 border border-slate-700 py-1 shadow-lg z-20 text-xs">
+                  {/* Option 1: Profile Details */}
+                  <button
+                    onClick={showProfileAlert}
+                    className="w-full px-4 py-2 text-left text-slate-200 hover:bg-slate-700 hover:text-white flex items-center space-x-2 transition"
+                  >
+                    <UserIcon className="w-4 h-4 text-slate-400" />
+                    <span>Mi Perfil</span>
+                  </button>
+
+                  {/* Option 2: Toggle Theme */}
+                  <button
+                    onClick={toggleTheme}
+                    className="w-full px-4 py-2 text-left text-slate-200 hover:bg-slate-700 hover:text-white flex items-center space-x-2 transition border-b border-slate-700/60"
+                  >
+                    <Sun className="w-4 h-4 text-amber-400 block dark:hidden" />
+                    <Moon className="w-4 h-4 text-indigo-400 hidden dark:block" />
+                    <span>Alternar Tema</span>
+                  </button>
+
+                  {/* Option 3: Logout */}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-left text-rose-400 hover:bg-red-950/40 hover:text-rose-300 flex items-center space-x-2 transition"
+                  >
+                    <LogOut className="w-4 h-4 text-rose-400" />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <Link
@@ -136,4 +210,6 @@ export function Navbar() {
     </header>
   );
 }
+
+
 

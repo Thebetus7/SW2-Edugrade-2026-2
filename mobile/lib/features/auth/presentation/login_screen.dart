@@ -113,16 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Scanner & Corrección Multimodal (Gemini 2.5 Flash)',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white60,
-                  ),
-                ),
-                const SizedBox(height: 28),
-
+                
                 // Real-time Server Connection Status Card
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -143,46 +134,51 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _isServerOnline
-                                      ? Colors.greenAccent
-                                      : (_isCheckingServer ? Colors.amber : Colors.redAccent),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                _isCheckingServer
-                                    ? 'Verificando servidor...'
-                                    : _isServerOnline
-                                    ? 'Servidor Conectado'
-                                    : 'Servidor Desconectado',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                  color: _isServerOnline ? Colors.greenAccent : Colors.redAccent,
-                                ),
-                              ),
-                              if (_latencyMs != null && _isServerOnline) ...[
-                                const SizedBox(width: 6),
+                          Expanded(
+                            child: Row(
+                              children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  width: 10,
+                                  height: 10,
                                   decoration: BoxDecoration(
-                                    color: Colors.black38,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    '${_latencyMs}ms',
-                                    style: const TextStyle(fontSize: 10, color: Colors.greenAccent),
+                                    shape: BoxShape.circle,
+                                    color: _isServerOnline
+                                        ? Colors.greenAccent
+                                        : (_isCheckingServer ? Colors.amber : Colors.redAccent),
                                   ),
                                 ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    _isCheckingServer
+                                        ? 'Verificando servidor...'
+                                        : _isServerOnline
+                                            ? 'Servidor Conectado'
+                                            : 'Servidor Desconectado',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: _isServerOnline ? Colors.greenAccent : Colors.redAccent,
+                                    ),
+                                  ),
+                                ),
+                                if (_latencyMs != null && _isServerOnline) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black38,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      '${_latencyMs}ms',
+                                      style: const TextStyle(fontSize: 10, color: Colors.greenAccent),
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                           IconButton(
                             icon: const Icon(Icons.refresh, size: 18, color: Colors.white70),
@@ -195,10 +191,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 6),
                       Text(
                         'URL: ${ApiConstants.baseUrl}',
+                        softWrap: true,
                         style: const TextStyle(
                           fontSize: 11,
                           fontFamily: 'monospace',
-                          color: Colors.white70,
+                          color: Colors.white54,
                         ),
                       ),
                     ],
